@@ -1,5 +1,4 @@
-export type UserRole = "admin" | "individual" | "corporate";
-export type UserStatus = "pending" | "approved" | "rejected";
+import { UserRole, UserStatus } from "./common.types.js";
 
 export interface CategoryRow {
   id: string;
@@ -28,6 +27,7 @@ export interface UserRow {
   email: string;
   password_hash: string;
   role: UserRole;
+  status: UserStatus;
   created_at: Date;
   updated_at: Date;
 }
@@ -38,7 +38,7 @@ export interface CorporateProfileRow {
   company_name: string;
   tax_number: string;
   tax_office: string;
-  phone_number: string;
+  phone: string;
   address: string;
   created_at: Date;
   updated_at: Date;
@@ -49,7 +49,7 @@ export interface IndividualProfileRow {
   user_id: string;
   first_name: string;
   last_name: string;
-  phone_number: string;
+  phone: string;
   created_at: Date;
   updated_at: Date;
 }

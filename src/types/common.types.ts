@@ -28,3 +28,15 @@ export enum HTTPStatus {
 
   INTERNAL_SERVER_ERROR = 500,
 }
+
+export enum UserRole {
+  ADMIN = "admin",
+  INDIVIDUAL = "individual",
+  CORPORATE = "corporate",
+}
+
+export enum UserStatus {
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
+}
