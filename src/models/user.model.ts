@@ -1,6 +1,6 @@
 import { Pool, PoolClient } from "pg";
-import { CorporateProfileRow, IndividualProfileRow, UserAggregate, UserRow } from "../types/db.types.js";
-import { UserStatus } from "../types/common.types.js";
+import { CorporateProfileRow, IndividualProfileRow, UserAggregate, UserRow } from "../types/db.types";
+import { UserStatus } from "../types/common.types";
 
 type CreateUserDTO = Omit<UserRow, "created_at" | "updated_at">;
 type CreateCorporateProfileDto = Omit<CorporateProfileRow, "created_at" | "updated_at">;

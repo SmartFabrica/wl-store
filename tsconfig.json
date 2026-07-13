@@ -2,7 +2,9 @@
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./"
+    "rootDir": "./",
+    "moduleResolution": "Bundler",
+    "module": "ESNext"
   },
   "include": ["**/*.ts"],
   "exclude": ["dist"]

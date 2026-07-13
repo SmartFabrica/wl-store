@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../utils/catch-async.js";
-import { APIResponse, HTTPStatus, UserRole, UserStatus } from "../types/common.types.js";
-import { AppError } from "../utils/app-error.js";
-import dbPool from "../config/db.js";
-import UserModel from "../models/user.model.js";
+import { catchAsync } from "../utils/catch-async";
+import { APIResponse, HTTPStatus, UserRole, UserStatus } from "../types/common.types";
+import { AppError } from "../utils/app-error";
+import dbPool from "../config/db";
+import UserModel from "../models/user.model";
 import { v4 as uuidv4 } from "uuid";
-import { comparePassword, hashPassword } from "../utils/password.js";
-import { UserAggregate } from "../types/db.types.js";
-import { generateToken } from "../utils/jwt.js";
+import { comparePassword, hashPassword } from "../utils/password";
+import { UserAggregate } from "../types/db.types";
+import { generateToken } from "../utils/jwt";
 
 export const register = catchAsync(async (req: Request, res: Response) => {
   const { role, email, password, company_name, phone, address, tax_number, tax_office, first_name, last_name } = req.body;

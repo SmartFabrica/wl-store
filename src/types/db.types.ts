@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "./common.types.js";
+import { UserRole, UserStatus } from "./common.types";
 
 export interface CategoryRow {
   id: string;

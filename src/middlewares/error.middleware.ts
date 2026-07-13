@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import { AppError } from "../utils/app-error.js";
-import { APIResponse } from "../types/common.types.js";
+import { AppError } from "../utils/app-error";
+import { APIResponse } from "../types/common.types";
 
 export const errorHandler: ErrorRequestHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
   let statusCode = 500;

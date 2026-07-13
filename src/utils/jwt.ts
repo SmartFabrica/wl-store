@@ -1,4 +1,4 @@
-import { UserRole } from "../types/common.types.js";
+import { UserRole } from "../types/common.types";
 import jwt from "jsonwebtoken";
 
 interface TokenPayload {

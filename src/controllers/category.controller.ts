@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../utils/catch-async.js";
+import { catchAsync } from "../utils/catch-async";
 import { v4 as uuidv4 } from "uuid";
-import CategoryModel from "../models/category.model.js";
-import dbPool from "../config/db.js";
-import { APIResponse, HTTPStatus } from "../types/common.types.js";
-import { CategoryRow } from "../types/db.types.js";
-import { AppError } from "../utils/app-error.js";
+import CategoryModel from "../models/category.model";
+import dbPool from "../config/db";
+import { APIResponse, HTTPStatus } from "../types/common.types";
+import { CategoryRow } from "../types/db.types";
+import { AppError } from "../utils/app-error";
 
 export const createCategory = catchAsync(async (req: Request, res: Response) => {
   const { name } = req.body;

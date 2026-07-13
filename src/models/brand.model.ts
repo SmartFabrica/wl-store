@@ -1,12 +1,12 @@
 import { Pool } from "pg";
-import { CategoryRow } from "../types/db.types";
+import { BrandRow } from "../types/db.types";
 
-type CategoryDTO = Omit<CategoryRow, "created_at" | "updated_at">;
+type BrandDTO = Omit<BrandRow, "created_at" | "updated_at">;
 
-const CategoryModel = {
-  create: async (client: Pool, dto: CategoryDTO): Promise<CategoryRow> => {
+const BrandModel = {
+  create: async (client: Pool, dto: BrandDTO): Promise<BrandRow> => {
     const sql = `
-        INSERT INTO categories (id, name)
+        INSERT INTO brands (id, name)
         VALUES ($1, $2)
         RETURNING *;
     `;
@@ -16,9 +16,9 @@ const CategoryModel = {
     return response.rows[0];
   },
 
-  update: async (client: Pool, dto: CategoryDTO): Promise<CategoryRow> => {
+  update: async (client: Pool, dto: BrandDTO): Promise<BrandRow> => {
     const sql = `
-        UPDATE categories 
+        UPDATE brands 
       SET 
         name = $2 
       WHERE id = $1
@@ -30,10 +30,10 @@ const CategoryModel = {
     return result.rows[0];
   },
 
-  getById: async (client: Pool, id: string): Promise<CategoryRow | null> => {
+  getById: async (client: Pool, id: string): Promise<BrandRow | null> => {
     const sql = `
         SELECT * 
-        FROM categories 
+        FROM brands 
         WHERE id = $1
     `;
     const values = [id];
@@ -42,9 +42,9 @@ const CategoryModel = {
     return result.rows[0];
   },
 
-  getAll: async (client: Pool): Promise<CategoryRow[]> => {
+  getAll: async (client: Pool): Promise<BrandRow[]> => {
     const sql = `
-        SELECT * FROM categories ORDER BY created_at DESC 
+        SELECT * FROM brands ORDER BY created_at DESC 
     `;
     const result = await client.query(sql);
     return result.rows;
@@ -52,7 +52,7 @@ const CategoryModel = {
 
   delete: async (client: Pool, id: string): Promise<void> => {
     const sql = `
-        DELETE FROM categories WHERE id=$1
+        DELETE FROM brands WHERE id=$1
     `;
 
     const values = [id];
@@ -60,4 +60,4 @@ const CategoryModel = {
   },
 };
 
-export default CategoryModel;
+export default BrandModel;

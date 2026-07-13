@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../utils/catch-async.js";
-import UserModel from "../models/user.model.js";
-import dbPool from "../config/db.js";
-import { APIResponse, HTTPStatus, UserStatus } from "../types/common.types.js";
-import { UserAggregate, UserRow } from "../types/db.types.js";
-import { AppError } from "../utils/app-error.js";
+import { catchAsync } from "../utils/catch-async";
+import UserModel from "../models/user.model";
+import dbPool from "../config/db";
+import { APIResponse, HTTPStatus, UserStatus } from "../types/common.types";
+import { UserAggregate, UserRow } from "../types/db.types";
+import { AppError } from "../utils/app-error";
 
 export const getUsers = catchAsync(async (req: Request, res: Response) => {
   const userRows = await UserModel.getAllUsers(dbPool);
