@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "./common.types";
+import { QuoteStatus, UserRole, UserStatus } from "./common.types";
 
 export interface CategoryRow {
   id: string;
@@ -77,3 +77,24 @@ export type CorporateUserRawJoin = UserRow & Omit<CorporateProfileRow, "id" | "c
 export type IndividualUserRawJoin = UserRow & Omit<IndividualProfileRow, "id" | "created_at" | "updated_at">;
 
 export type UserAggregate = CorporateUser | IndividualUser;
+
+export interface QuoteRow {
+  id: string;
+  quote_number: string;
+  buyer_id: string;
+  vendor_id: string;
+  status: QuoteStatus;
+  shipping_address: string;
+  billing_address?: string;
+  buyer_note?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface QuoteItemRow {
+  id: string;
+  quote_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: Date;
+}

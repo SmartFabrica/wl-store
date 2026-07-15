@@ -40,3 +40,11 @@ export enum UserStatus {
   APPROVED = "approved",
   REJECTED = "rejected",
 }
+
+export enum QuoteStatus {
+  PENDING = "pending",
+  APPROVED = "approved",
+  SHIPPED = "shipped",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}

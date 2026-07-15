@@ -1,0 +1,75 @@
+import { Request, Response } from "express";
+import QuoteModel, { QuoteItemWithProduct } from "../models/quote.model";
+import dbPool from "../config/db";
+import { APIResponse, HTTPStatus } from "../types/common.types";
+import { QuoteRow } from "../types/db.types";
+import { AppError } from "../utils/app-error";
+import { catchAsync } from "../utils/catch-async";
+
+export const getBuyerQuotes = catchAsync(async (req: Request, res: Response) => {
+  const buyerId = req.user?.id;
+  const quotes = await QuoteModel.getBuyerQuotes(dbPool, buyerId as string);
+
+  const response: APIResponse<QuoteRow[]> = {
+    success: true,
+    message: "Alıcı için teklifler getirilmiştir",
+    data: quotes,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const getVendorQuotes = catchAsync(async (req: Request, res: Response) => {
+  const vendorId = req.user?.id;
+  const quotes = await QuoteModel.getVendorQuotes(dbPool, vendorId as string);
+
+  const response: APIResponse<QuoteRow[]> = {
+    success: true,
+    message: "Satıcı için teklifler getirilmiştir.",
+    data: quotes,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const updateQuoteStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const existingQuote = await QuoteModel.findQuoteById(dbPool, id as string);
+  if (!existingQuote) {
+    throw new AppError("Güncellenecek teklif bulunamadı", HTTPStatus.NOT_FOUND);
+  }
+
+  const updatedQuote = await QuoteModel.updateQuoteStatus(dbPool, {
+    id: id as string,
+    status,
+  });
+
+  const response: APIResponse<QuoteRow> = {
+    success: true,
+    message: "Teklif durumu güncellendi",
+    data: updatedQuote,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const getQuoteItems = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const existingQuote = await QuoteModel.findQuoteById(dbPool, id as string);
+  if (!existingQuote) {
+    throw new AppError("Ürünleri listelenecek teklif bulunamadı", HTTPStatus.NOT_FOUND);
+  }
+
+  const quoteItems = await QuoteModel.getQuoteItems(dbPool, id as string);
+
+  const response: APIResponse<QuoteItemWithProduct[]> = {
+    success: true,
+    message: "Teklif ürünleri getirildi.",
+    data: quoteItems,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
