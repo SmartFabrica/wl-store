@@ -56,6 +56,8 @@ export interface IndividualProfileRow {
 
 export interface ProductRow {
   id: string;
+  brand_id: string;
+  category_id: string;
   title: string;
   mpn: string;
   description: string;
