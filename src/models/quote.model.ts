@@ -10,7 +10,7 @@ interface QuoteDTO extends QuotePayload {
 
 type QuoteItemProductDetails = Pick<ProductRow, "title" | "mpn">;
 
-interface QuoteItemWithProduct extends QuoteItemRow, QuoteItemProductDetails {}
+export interface QuoteItemWithProduct extends QuoteItemRow, QuoteItemProductDetails {}
 
 type QuoteStatusDTO = Pick<QuoteRow, "id" | "status">;
 
