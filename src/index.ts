@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/auth", authRouter);
-app.use(protect);
+// app.use(protect);
 
 app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);

@@ -51,6 +51,13 @@ const BrandModelsModel = {
     return result.rows;
   },
 
+  getByBrandId: async (client: Pool, brandId: string): Promise<BrandModelRow[]> => {
+    const sql = `SELECT * FROM brand_models WHERE brand_id = $1 ORDER BY created_at DESC`;
+    const values = [brandId];
+    const result = await client.query(sql, values);
+    return result.rows;
+  },
+
   delete: async (client: Pool, id: string): Promise<void> => {
     const sql = `
         DELETE FROM brand_models WHERE id=$1
