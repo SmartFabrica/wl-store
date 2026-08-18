@@ -22,6 +22,14 @@ export interface BrandModelRow {
   updated_at: Date;
 }
 
+export interface BrandModelChassisRow {
+  id: string;
+  model_id: string;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface UserRow {
   id: string;
   email: string;

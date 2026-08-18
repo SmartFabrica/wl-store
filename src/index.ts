@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.route";
 import { protect } from "./middlewares/auth.middeware";
 import cors from "cors";
 import productRouter from "./routes/product.route";
+import brandModelChassisRouter from "./routes/brand-model-chassis.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -21,6 +22,7 @@ app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/brands", brandRouter);
 app.use("/api/brand-models", brandModelRouter);
+app.use("/api/brand-model-chassis", brandModelChassisRouter);
 app.use("/api/products", productRouter);
 
 app.listen(port, () => {

@@ -55,7 +55,7 @@ export const deleteBrandModel = catchAsync(async (req: Request, res: Response) =
 
   const existingBrandModel = await BrandModelsModel.getById(dbPool, id as string);
   if (!existingBrandModel) {
-    throw new AppError("Güncellenecek marka modeli bulunamadı", HTTPStatus.NOT_FOUND);
+    throw new AppError("Silinecek marka modeli bulunamadı", HTTPStatus.NOT_FOUND);
   }
 
   await BrandModelsModel.delete(dbPool, id as string);
