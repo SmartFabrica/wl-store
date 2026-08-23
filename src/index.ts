@@ -8,6 +8,7 @@ import { protect } from "./middlewares/auth.middeware";
 import cors from "cors";
 import productRouter from "./routes/product.route";
 import brandModelChassisRouter from "./routes/brand-model-chassis.route";
+import { errorHandler } from "./middlewares/error.middleware";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -24,6 +25,7 @@ app.use("/api/brands", brandRouter);
 app.use("/api/brand-models", brandModelRouter);
 app.use("/api/brand-model-chassis", brandModelChassisRouter);
 app.use("/api/products", productRouter);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

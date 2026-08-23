@@ -62,15 +62,45 @@ export interface IndividualProfileRow {
   updated_at: Date;
 }
 
+interface ProductSpecs {
+  key: string;
+  value: string;
+}
+
 export interface ProductRow {
   id: string;
   brand_id: string;
   category_id: string;
   title: string;
   mpn: string;
-  description: string;
+  description: string | null;
+  specs: ProductSpecs[] | null | string;
+  price: string | null;
+  price_visible: boolean | null;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface ProductCompatibilityRow {
+  id: string;
+  product_id: string;
+  model_id: string;
+  chassis_id: string;
+  created_at: Date;
+}
+
+export interface ProductImageRow {
+  id: string;
+  product_id: string;
+  image_url: string;
+  is_main: boolean;
+  created_at: Date;
+}
+
+export type ProductCompatDetail = Omit<ProductCompatibilityRow, "product_id" | "created_at">;
+
+export interface ProductDetail extends ProductRow {
+  compat: ProductCompatDetail[];
 }
 
 export interface CorporateUser extends UserRow {
