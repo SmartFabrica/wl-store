@@ -20,8 +20,8 @@ export const getBuyerQuotes = catchAsync(async (req: Request, res: Response) => 
 });
 
 export const getVendorQuotes = catchAsync(async (req: Request, res: Response) => {
-  const vendorId = req.user?.id;
-  const quotes = await QuoteModel.getVendorQuotes(dbPool, vendorId as string);
+  //const vendorId = req.user?.id;
+  const quotes = await QuoteModel.getVendorQuotes(dbPool);
 
   const response: APIResponse<QuoteRow[]> = {
     success: true,
@@ -56,14 +56,14 @@ export const updateQuoteStatus = catchAsync(async (req: Request, res: Response) 
 });
 
 export const getQuoteItems = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { quoteId } = req.params;
 
-  const existingQuote = await QuoteModel.findQuoteById(dbPool, id as string);
+  const existingQuote = await QuoteModel.findQuoteById(dbPool, quoteId as string);
   if (!existingQuote) {
     throw new AppError("Ürünleri listelenecek teklif bulunamadı", HTTPStatus.NOT_FOUND);
   }
 
-  const quoteItems = await QuoteModel.getQuoteItems(dbPool, id as string);
+  const quoteItems = await QuoteModel.getQuoteItems(dbPool, quoteId as string);
 
   const response: APIResponse<QuoteItemWithProduct[]> = {
     success: true,

@@ -21,11 +21,10 @@ const QuoteModel = {
     const result = await client.query(sql, values);
     return result.rows;
   },
-
-  getVendorQuotes: async (client: Pool | PoolClient, vendorId: string): Promise<QuoteRow[]> => {
-    const sql = "SELECT * FROM quotes WHERE vendor_id = $2 ORDER BY created_at DESC";
-    const values = [vendorId];
-    const result = await client.query(sql, values);
+  //TODO: vendor_id ye göre satıcı sayısı çoğaldığında veriler getirilecek.
+  getVendorQuotes: async (client: Pool | PoolClient): Promise<QuoteRow[]> => {
+    const sql = "SELECT * FROM quotes ORDER BY created_at DESC";
+    const result = await client.query(sql);
     return result.rows;
   },
 

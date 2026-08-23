@@ -9,6 +9,7 @@ import cors from "cors";
 import productRouter from "./routes/product.route";
 import brandModelChassisRouter from "./routes/brand-model-chassis.route";
 import { errorHandler } from "./middlewares/error.middleware";
+import quoteRouter from "./routes/quote.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -25,6 +26,7 @@ app.use("/api/brands", brandRouter);
 app.use("/api/brand-models", brandModelRouter);
 app.use("/api/brand-model-chassis", brandModelChassisRouter);
 app.use("/api/products", productRouter);
+app.use("/api/quotes", quoteRouter);
 app.use(errorHandler);
 
 app.listen(port, () => {
