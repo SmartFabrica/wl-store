@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import QuoteModel, { QuoteItemWithProduct } from "../models/quote.model";
+import QuoteModel, { QuoteDetailDTO, QuoteItemWithProduct, QuoteListDTO } from "../models/quote.model";
 import dbPool from "../config/db";
 import { APIResponse, HTTPStatus } from "../types/common.types";
 import { QuoteRow } from "../types/db.types";
@@ -23,10 +23,27 @@ export const getVendorQuotes = catchAsync(async (req: Request, res: Response) =>
   //const vendorId = req.user?.id;
   const quotes = await QuoteModel.getVendorQuotes(dbPool);
 
-  const response: APIResponse<QuoteRow[]> = {
+  const response: APIResponse<QuoteListDTO[]> = {
     success: true,
     message: "Satıcı için teklifler getirilmiştir.",
     data: quotes,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const getVendorQuoteById = catchAsync(async (req: Request, res: Response) => {
+  const { quoteId } = req.params;
+
+  const quote = await QuoteModel.getDetailById(dbPool, quoteId as string);
+  if (!quote) {
+    throw new AppError("Aranan teklif bulunamadı", HTTPStatus.BAD_REQUEST);
+  }
+
+  const response: APIResponse<QuoteDetailDTO> = {
+    success: true,
+    message: "Teklif detayı başarıyla getirildi.",
+    data: quote,
   };
 
   return res.status(HTTPStatus.OK).json(response);

@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from "pg";
-import { ProductRow, QuoteItemRow, QuoteRow } from "../types/db.types";
+import { CorporateProfileRow, IndividualProfileRow, ProductRow, QuoteItemRow, QuoteRow } from "../types/db.types";
 
 type QuotePayload = Omit<QuoteRow, "quote_number" | "buyer_id" | "created_at" | "updated_at" | "id">;
 type QuoteItemPayload = Omit<QuoteItemRow, "quote_id" | "created_at" | "id">;
@@ -14,6 +14,18 @@ export interface QuoteItemWithProduct extends QuoteItemRow, QuoteItemProductDeta
 
 type QuoteStatusDTO = Pick<QuoteRow, "id" | "status">;
 
+export interface QuoteDetailDTO extends QuoteRow {
+  buyer_name: CorporateProfileRow["company_name"] | IndividualProfileRow["first_name"];
+}
+
+export interface QuoteListDTO {
+  id: QuoteRow["id"];
+  quote_number: QuoteRow["quote_number"];
+  created_at: QuoteRow["created_at"];
+  status: QuoteRow["status"];
+  buyer_name: CorporateProfileRow["company_name"] | IndividualProfileRow["first_name"];
+}
+
 const QuoteModel = {
   getBuyerQuotes: async (client: Pool | PoolClient, buyerId: string): Promise<QuoteRow[]> => {
     const sql = "SELECT * FROM quotes WHERE buyer_id = $1 ORDER BY created_at DESC";
@@ -22,14 +34,42 @@ const QuoteModel = {
     return result.rows;
   },
   //TODO: vendor_id ye göre satıcı sayısı çoğaldığında veriler getirilecek.
-  getVendorQuotes: async (client: Pool | PoolClient): Promise<QuoteRow[]> => {
-    const sql = "SELECT * FROM quotes ORDER BY created_at DESC";
+  getVendorQuotes: async (client: Pool | PoolClient): Promise<QuoteListDTO[]> => {
+    const sql = `
+      SELECT 
+        q.id, 
+        q.quote_number, 
+        q.created_at, 
+        q.status,
+        COALESCE(cp.company_name, ip.first_name || ' ' || ip.last_name) AS buyer_name 
+      FROM quotes q 
+        LEFT JOIN corporate_profiles cp ON cp.user_id = q.buyer_id 
+        LEFT JOIN individual_profiles ip ON ip.user_id = q.buyer_id 
+      ORDER BY created_at DESC
+    `;
     const result = await client.query(sql);
     return result.rows;
   },
 
   findQuoteById: async (client: Pool | PoolClient, quoteId: string): Promise<QuoteRow | null> => {
     const sql = "SELECT * FROM quotes WHERE id=$1 LIMIT 1";
+    const values = [quoteId];
+    const result = await client.query(sql, values);
+    if (result.rowCount === 0) return null;
+    return result.rows[0];
+  },
+
+  getDetailById: async (client: Pool | PoolClient, quoteId: string): Promise<QuoteDetailDTO | null> => {
+    const sql = `
+      SELECT 
+        q.*,
+        COALESCE(cp.company_name, ip.first_name || ' ' || ip.last_name) AS buyer_name 
+      FROM quotes q 
+        LEFT JOIN corporate_profiles cp ON cp.user_id = q.buyer_id 
+        LEFT JOIN individual_profiles ip ON ip.user_id = q.buyer_id 
+      WHERE q.id = $1
+      ORDER BY created_at DESC
+    `;
     const values = [quoteId];
     const result = await client.query(sql, values);
     if (result.rowCount === 0) return null;
