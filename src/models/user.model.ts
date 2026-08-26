@@ -94,6 +94,45 @@ const UserModel = {
     return result.rows[0];
   },
 
+  getDetailById: async (client: PoolClient | Pool, id: string): Promise<UserAggregate | null> => {
+    const sql = `
+      SELECT 
+        u.id, 
+        u.email, 
+        u.password_hash, 
+        u.role, 
+        u.status, 
+        u.created_at,
+        u.updated_at,
+        CASE 
+          WHEN u.role = 'corporate' THEN 
+            json_build_object(
+              'company_name', cp.company_name,
+              'tax_number', cp.tax_number,
+              'tax_office', cp.tax_office,
+              'phone_number', cp.phone,
+              'address', cp.address
+            )
+          WHEN u.role = 'individual' THEN 
+            json_build_object(
+              'first_name', ip.first_name,
+              'last_name', ip.last_name,
+              'phone_number', ip.phone
+            )
+          ELSE null
+        END as profile
+      FROM users u
+      LEFT JOIN corporate_profiles cp ON u.id = cp.user_id
+      LEFT JOIN individual_profiles ip ON u.id = ip.user_id
+      WHERE u.id = $1
+      LIMIT 1
+    `;
+    const values = [id];
+    const result = await client.query(sql, values);
+    if (result.rowCount === 0) return null;
+    return result.rows[0];
+  },
+
   getAllUsers: async (client: PoolClient | Pool): Promise<UserAggregate[]> => {
     const sql = `
       SELECT 

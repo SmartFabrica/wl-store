@@ -111,9 +111,6 @@ export interface IndividualUser extends UserRow {
   profile: Omit<IndividualProfileRow, "id" | "user_id" | "created_at" | "updated_at">;
 }
 
-export type CorporateUserRawJoin = UserRow & Omit<CorporateProfileRow, "id" | "created_at" | "updated_at">;
-export type IndividualUserRawJoin = UserRow & Omit<IndividualProfileRow, "id" | "created_at" | "updated_at">;
-
 export type UserAggregate = CorporateUser | IndividualUser;
 
 export interface QuoteRow {

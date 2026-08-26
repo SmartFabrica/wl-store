@@ -17,11 +17,28 @@ export const getUsers = catchAsync(async (req: Request, res: Response) => {
   return res.status(HTTPStatus.OK).json(response);
 });
 
+export const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const user = await UserModel.getDetailById(dbPool, id as string);
+  if (!user) {
+    throw new AppError("Aranan kullanıcı bulunamadı", HTTPStatus.BAD_REQUEST);
+  }
+
+  const response: APIResponse<UserAggregate> = {
+    success: true,
+    message: "Kullanıcı detayı başarıyla getirildi.",
+    data: user,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
 export const reviewUserStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  if (status !== UserStatus.APPROVED && status !== UserStatus.REJECTED) {
+  if (status !== UserStatus.APPROVED) {
     throw new AppError("Geçersiz statüs değeri. Sadece approved veya rejected olabilir.", HTTPStatus.BAD_REQUEST);
   }
 
