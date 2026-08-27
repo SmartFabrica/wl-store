@@ -38,7 +38,6 @@ export enum UserRole {
 export enum UserStatus {
   PENDING = "pending",
   APPROVED = "approved",
-  REJECTED = "rejected",
 }
 
 export enum QuoteStatus {

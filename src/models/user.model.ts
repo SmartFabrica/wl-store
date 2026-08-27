@@ -177,6 +177,14 @@ const UserModel = {
     const result = await client.query(sql, values);
     return result.rows[0];
   },
+
+  delete: async (client: PoolClient | Pool, userId: string): Promise<void> => {
+    const sql = `
+      DELETE FROM users WHERE id=$1
+    `;
+    const values = [userId];
+    await client.query(sql, values);
+  },
 };
 
 export default UserModel;

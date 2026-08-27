@@ -39,7 +39,7 @@ export const reviewUserStatus = catchAsync(async (req: Request, res: Response) =
   const { status } = req.body;
 
   if (status !== UserStatus.APPROVED) {
-    throw new AppError("Geçersiz statüs değeri. Sadece approved veya rejected olabilir.", HTTPStatus.BAD_REQUEST);
+    throw new AppError("Geçersiz statüs değeri. Sadece approved olabilir.", HTTPStatus.BAD_REQUEST);
   }
 
   const existingUser = await UserModel.findById(dbPool, id as string);
@@ -56,6 +56,24 @@ export const reviewUserStatus = catchAsync(async (req: Request, res: Response) =
     success: true,
     message: "Kullanıcı başvuru durumu güncellendi",
     data: updatedUser,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const deleteUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const existingUser = await UserModel.findById(dbPool, id as string);
+  if (!existingUser) {
+    throw new AppError("Silinecek kullanıcı bulunamadı", HTTPStatus.NOT_FOUND);
+  }
+
+  await UserModel.delete(dbPool, id as string);
+
+  const response: APIResponse = {
+    success: true,
+    message: "Kullanıcı başarıyla silindi.",
   };
 
   return res.status(HTTPStatus.OK).json(response);

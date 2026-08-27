@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getUserById, getUsers, reviewUserStatus } from "../controllers/user.controller";
+import { deleteUser, getUserById, getUsers, reviewUserStatus } from "../controllers/user.controller";
 
 const userRouter = Router();
 
 userRouter.get("/", getUsers);
 userRouter.get("/:id", getUserById);
-userRouter.put("/review-user-status", reviewUserStatus);
+userRouter.put("/:id/review-user-status", reviewUserStatus);
+userRouter.delete("/:id", deleteUser);
 
 export default userRouter;

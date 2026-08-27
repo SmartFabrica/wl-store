@@ -119,10 +119,6 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     throw new AppError("Hesabınız henüz admin tarafından onaylanmamıştır. Lütfen bekleyiniz.", 403);
   }
 
-  if (user.status === UserStatus.REJECTED) {
-    throw new AppError("Hesap başvurunuz reddedilmiştir. Detaylı bilgi için destek ile iletişime geçin.", 403);
-  }
-
   const isPasswordMatch = await comparePassword(password, user.password_hash);
   if (!isPasswordMatch) {
     throw new AppError("Giriş bilgileri hatalı veya geçersiz.", HTTPStatus.UNAUTHORIZED);
