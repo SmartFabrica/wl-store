@@ -133,8 +133,8 @@ const UserModel = {
     return result.rows[0];
   },
 
-  getAllUsers: async (client: PoolClient | Pool): Promise<UserAggregate[]> => {
-    const sql = `
+  getAllUsers: async (client: PoolClient | Pool, limit: number): Promise<UserAggregate[]> => {
+    let sql = `
       SELECT 
         u.id, u.email, u.role, u.status, u.created_at, u.updated_at,
         CASE 
@@ -157,8 +157,13 @@ const UserModel = {
       FROM public.users u
       LEFT JOIN public.corporate_profiles cp ON u.id = cp.user_id
       LEFT JOIN public.individual_profiles ip ON u.id = ip.user_id
-      ORDER BY u.created_at DESC    
+      WHERE u.role <> 'admin'
+      ORDER BY u.created_at DESC
     `;
+
+    if (limit) {
+      sql += ` LIMIT ${limit}`;
+    }
 
     const result = await client.query(sql);
     return result.rows;

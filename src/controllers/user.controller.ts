@@ -7,7 +7,9 @@ import { UserAggregate, UserRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 
 export const getUsers = catchAsync(async (req: Request, res: Response) => {
-  const userRows = await UserModel.getAllUsers(dbPool);
+  const { limit } = req.query;
+
+  const userRows = await UserModel.getAllUsers(dbPool, Number(limit));
   const response: APIResponse<UserAggregate[]> = {
     success: true,
     message: "Tüm kullanıcılar başarıyla listelendi",

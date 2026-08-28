@@ -34,8 +34,8 @@ const QuoteModel = {
     return result.rows;
   },
   //TODO: vendor_id ye göre satıcı sayısı çoğaldığında veriler getirilecek.
-  getVendorQuotes: async (client: Pool | PoolClient): Promise<QuoteListDTO[]> => {
-    const sql = `
+  getVendorQuotes: async (client: Pool | PoolClient, limit: number): Promise<QuoteListDTO[]> => {
+    let sql = `
       SELECT 
         q.id, 
         q.quote_number, 
@@ -47,7 +47,15 @@ const QuoteModel = {
         LEFT JOIN individual_profiles ip ON ip.user_id = q.buyer_id 
       ORDER BY created_at DESC
     `;
-    const result = await client.query(sql);
+
+    const params = [];
+
+    if (Number.isInteger(limit)) {
+      params.push(Math.min(limit, 100));
+      sql += ` LIMIT $${params.length}`;
+    }
+
+    const result = await client.query(sql, params);
     return result.rows;
   },
 

@@ -21,7 +21,9 @@ export const getBuyerQuotes = catchAsync(async (req: Request, res: Response) => 
 
 export const getVendorQuotes = catchAsync(async (req: Request, res: Response) => {
   //const vendorId = req.user?.id;
-  const quotes = await QuoteModel.getVendorQuotes(dbPool);
+  const { limit } = req.query;
+
+  const quotes = await QuoteModel.getVendorQuotes(dbPool, Number(limit));
 
   const response: APIResponse<QuoteListDTO[]> = {
     success: true,
