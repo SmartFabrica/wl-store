@@ -133,3 +133,49 @@ export interface QuoteItemRow {
   quantity: number;
   created_at: Date;
 }
+
+export interface OverviewRow {
+  product_count: number;
+  approved_customer_count: number;
+  category_count: number;
+  brand_count: number;
+  brand_model_count: number;
+  brand_model_chassis_count: number;
+  pending_customer_count: number;
+  pending_quote_count: number;
+}
+
+export interface BulkUpsertModelChassisRow {
+  brand: BrandRow["name"];
+  model: BrandModelRow["name"];
+  chassis: BrandModelChassisRow["name"];
+}
+
+export interface BulkUpsertModelChassisResult {
+  brands_created: number;
+  models_created: number;
+  chassis_created: number;
+}
+
+export interface BulkUpsertCategoriesRow {
+  category: CategoryRow["name"];
+}
+
+export interface BulkUpsertCategoriesResult {
+  category_created: number;
+}
+
+export interface BulkUpsertProductsRow {
+  title: ProductRow["title"];
+  mpn: ProductRow["mpn"];
+  brand: BrandRow["name"];
+  model: BrandModelRow["name"];
+  chassis: BrandModelChassisRow["name"];
+  category: CategoryRow["name"];
+  price: ProductRow["price"];
+  price_visible: ProductRow["price_visible"];
+}
+
+export interface BulkUpsertProductsResult {
+  product_created: number;
+}

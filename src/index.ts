@@ -10,11 +10,13 @@ import productRouter from "./routes/product.route";
 import brandModelChassisRouter from "./routes/brand-model-chassis.route";
 import { errorHandler } from "./middlewares/error.middleware";
 import quoteRouter from "./routes/quote.route";
+import dashboardRouter from "./routes/dashboard.route";
+import uploadRouter from "./routes/upload.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 
 app.use("/api/auth", authRouter);
@@ -27,6 +29,8 @@ app.use("/api/brand-models", brandModelRouter);
 app.use("/api/brand-model-chassis", brandModelChassisRouter);
 app.use("/api/products", productRouter);
 app.use("/api/quotes", quoteRouter);
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/upload", uploadRouter);
 app.use(errorHandler);
 
 app.listen(port, () => {
