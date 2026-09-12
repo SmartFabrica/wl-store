@@ -3,7 +3,7 @@ import { catchAsync } from "../utils/catch-async";
 import { v4 as uuidv4 } from "uuid";
 import dbPool from "../config/db";
 import { APIResponse, HTTPStatus } from "../types/common.types";
-import { BrandModelChassisRow } from "../types/db.types";
+import { BrandModelChassisListItem, BrandModelChassisRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 import BrandModelsModel from "../models/brand-model.model";
 import BrandModelChassisModel from "../models/brand-model-chassis.model";
@@ -90,7 +90,7 @@ export const getBrandModelChassisByModelId = catchAsync(async (req: Request, res
 
   const brandModelChassis = await BrandModelChassisModel.getByModelId(dbPool, modelId as string);
 
-  const response: APIResponse<BrandModelChassisRow[]> = {
+  const response: APIResponse<BrandModelChassisListItem[]> = {
     success: true,
     message: "Modele ait kasalar başarıyla listelendi",
     data: brandModelChassis,

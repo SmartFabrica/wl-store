@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { CategoryRow } from "../types/db.types";
+import { CategoryListItem, CategoryRow } from "../types/db.types";
 
 type CategoryDTO = Omit<CategoryRow, "created_at" | "updated_at">;
 
@@ -42,9 +42,15 @@ const CategoryModel = {
     return result.rows[0];
   },
 
-  getAll: async (client: Pool): Promise<CategoryRow[]> => {
+  getAll: async (client: Pool): Promise<CategoryListItem[]> => {
     const sql = `
-        SELECT * FROM categories ORDER BY created_at DESC 
+        SELECT
+          c.*,
+          COUNT(p.id)::int AS product_count
+        FROM categories c
+        LEFT JOIN products p ON p.category_id = c.id
+        GROUP BY c.id
+        ORDER BY c.created_at DESC
     `;
     const result = await client.query(sql);
     return result.rows;

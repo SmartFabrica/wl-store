@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from "pg";
-import { ProductDetail, ProductRow } from "../types/db.types";
+import { ProductDetail, ProductListItem, ProductRow } from "../types/db.types";
 
 type ProductDTO = Omit<ProductRow, "created_at" | "updated_at">;
 
@@ -49,9 +49,32 @@ const ProductModel = {
     return result.rows[0];
   },
 
-  getAll: async (client: Pool | PoolClient): Promise<ProductRow[]> => {
+  getAll: async (client: Pool | PoolClient): Promise<ProductListItem[]> => {
     const sql = `
-        SELECT * FROM products ORDER BY created_at DESC 
+        SELECT
+          p.*,
+          b.name AS brand_name,
+          c.name AS category_name,
+          COALESCE(
+            (SELECT json_agg(
+                json_build_object(
+                  'id', pc.id,
+                  'model_id', pc.model_id,
+                  'model_name', bm.name,
+                  'chassis_id', pc.chassis_id,
+                  'chassis_name', bc.name
+                ) ORDER BY bm.name, bc.name
+              )
+             FROM product_compatibility pc
+             JOIN brand_models bm ON bm.id = pc.model_id
+             LEFT JOIN brand_chassis bc ON bc.id = pc.chassis_id
+             WHERE pc.product_id = p.id),
+            '[]'::json
+          ) AS compat
+        FROM products p
+        JOIN brands b ON b.id = p.brand_id
+        JOIN categories c ON c.id = p.category_id
+        ORDER BY p.created_at DESC
     `;
     const result = await client.query(sql);
     return result.rows;

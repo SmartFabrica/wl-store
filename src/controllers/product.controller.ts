@@ -3,7 +3,7 @@ import { catchAsync } from "../utils/catch-async";
 import { v4 as uuidv4 } from "uuid";
 import dbPool from "../config/db";
 import { APIResponse, HTTPStatus } from "../types/common.types";
-import { ProductDetail, ProductRow } from "../types/db.types";
+import { ProductDetail, ProductListItem, ProductRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 import ProductModel from "../models/product.model";
 import ProductCompatibilityModel from "../models/product-compatibility.model";
@@ -112,7 +112,7 @@ export const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 export const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const products = await ProductModel.getAll(dbPool);
 
-  const response: APIResponse<ProductRow[]> = {
+  const response: APIResponse<ProductListItem[]> = {
     success: true,
     message: "Ürünler başarıyla listelendi",
     data: products,

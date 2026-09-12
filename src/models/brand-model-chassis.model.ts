@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { BrandModelChassisRow } from "../types/db.types";
+import { BrandModelChassisListItem, BrandModelChassisRow } from "../types/db.types";
 
 type BrandModelChassisDTO = Omit<BrandModelChassisRow, "created_at" | "updated_at">;
 
@@ -51,8 +51,17 @@ const BrandModelChassisModel = {
     return result.rows;
   },
 
-  getByModelId: async (client: Pool, modelId: string): Promise<BrandModelChassisRow[]> => {
-    const sql = `SELECT * FROM brand_chassis WHERE model_id = $1 ORDER BY created_at DESC`;
+  getByModelId: async (client: Pool, modelId: string): Promise<BrandModelChassisListItem[]> => {
+    const sql = `
+        SELECT
+          bc.*,
+          COUNT(DISTINCT pc.product_id)::int AS product_count
+        FROM brand_chassis bc
+        LEFT JOIN product_compatibility pc ON pc.chassis_id = bc.id
+        WHERE bc.model_id = $1
+        GROUP BY bc.id
+        ORDER BY bc.created_at DESC
+    `;
     const values = [modelId];
     const result = await client.query(sql, values);
     return result.rows;

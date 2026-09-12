@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import CategoryModel from "../models/category.model";
 import dbPool from "../config/db";
 import { APIResponse, HTTPStatus } from "../types/common.types";
-import { CategoryRow } from "../types/db.types";
+import { CategoryListItem, CategoryRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 
 export const createCategory = catchAsync(async (req: Request, res: Response) => {
@@ -68,7 +68,7 @@ export const deleteCategory = catchAsync(async (req: Request, res: Response) => 
 export const getAllCategories = catchAsync(async (req: Request, res: Response) => {
   const categories = await CategoryModel.getAll(dbPool);
 
-  const response: APIResponse<CategoryRow[]> = {
+  const response: APIResponse<CategoryListItem[]> = {
     success: true,
     message: "Kategoriler başarıyla listelendi",
     data: categories,

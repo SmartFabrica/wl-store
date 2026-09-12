@@ -7,6 +7,10 @@ export interface CategoryRow {
   updated_at: Date;
 }
 
+export interface CategoryListItem extends CategoryRow {
+  product_count: number;
+}
+
 export interface BrandRow {
   id: string;
   name: string;
@@ -28,6 +32,10 @@ export interface BrandModelChassisRow {
   name: string;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface BrandModelChassisListItem extends BrandModelChassisRow {
+  product_count: number;
 }
 
 export interface UserRow {
@@ -99,8 +107,19 @@ export interface ProductImageRow {
 
 export type ProductCompatDetail = Omit<ProductCompatibilityRow, "product_id" | "created_at">;
 
+export interface ProductCompatNamed extends ProductCompatDetail {
+  model_name: BrandModelRow["name"];
+  chassis_name: BrandModelChassisRow["name"];
+}
+
 export interface ProductDetail extends ProductRow {
   compat: ProductCompatDetail[];
+}
+
+export interface ProductListItem extends ProductRow {
+  brand_name: BrandRow["name"];
+  category_name: CategoryRow["name"];
+  compat: ProductCompatNamed[];
 }
 
 export interface CorporateUser extends UserRow {
