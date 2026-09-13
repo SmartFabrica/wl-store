@@ -12,6 +12,7 @@ import { errorHandler } from "./middlewares/error.middleware";
 import quoteRouter from "./routes/quote.route";
 import dashboardRouter from "./routes/dashboard.route";
 import uploadRouter from "./routes/upload.route";
+import customerProductRouter from "./routes/customer-product.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -31,6 +32,7 @@ app.use("/api/products", productRouter);
 app.use("/api/quotes", quoteRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/customer/products", customerProductRouter);
 app.use(errorHandler);
 
 app.listen(port, () => {

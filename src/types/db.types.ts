@@ -122,6 +122,18 @@ export interface ProductListItem extends ProductRow {
   compat: ProductCompatNamed[];
 }
 
+export interface CustomerProductListItem extends Pick<ProductRow, "id" | "title" | "mpn" | "price" | "price_visible"> {
+  brand_name: BrandRow["name"];
+  category_name: CategoryRow["name"];
+}
+
+export interface CustomerProductFilters {
+  category_id?: ProductRow["category_id"];
+  model_id?: ProductCompatibilityRow["model_id"];
+  chassis_id?: ProductCompatibilityRow["chassis_id"];
+  limit?: number;
+}
+
 export interface CorporateUser extends UserRow {
   profile: Omit<CorporateProfileRow, "id" | "user_id" | "created_at" | "updated_at">;
 }
