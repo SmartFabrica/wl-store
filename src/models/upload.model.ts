@@ -139,9 +139,44 @@ const UploadModel = {
           JOIN brand_models m   ON m.brand_id = b.id AND m.name = i.model_name
           JOIN brand_chassis ch ON ch.model_id = m.id AND ch.name = i.chassis_name
         ),
+        unmatched AS (
+          SELECT
+            i.ord,
+            i.mpn,
+            array_remove(ARRAY[
+              CASE WHEN NOT EXISTS (
+                SELECT 1 FROM brands b WHERE b.name = i.brand_name
+              ) THEN 'Marka: ' || i.brand_name END,
+              CASE WHEN NOT EXISTS (
+                SELECT 1 FROM categories c WHERE c.name = i.category_name
+              ) THEN 'Kategori: ' || i.category_name END,
+              CASE WHEN NOT EXISTS (
+                SELECT 1
+                FROM brand_models m
+                JOIN brands b ON b.id = m.brand_id
+                WHERE b.name = i.brand_name AND m.name = i.model_name
+              ) THEN 'Model: ' || i.model_name END,
+              -- Kasa modele bağlı arandığı için "hiç yok" ile "var ama bu modelde yok" ayrılır.
+              CASE
+                WHEN EXISTS (
+                  SELECT 1
+                  FROM brand_chassis ch
+                  JOIN brand_models m ON m.id = ch.model_id
+                  JOIN brands b ON b.id = m.brand_id
+                  WHERE b.name = i.brand_name AND m.name = i.model_name AND ch.name = i.chassis_name
+                ) THEN NULL
+                WHEN EXISTS (SELECT 1 FROM brand_chassis ch WHERE ch.name = i.chassis_name)
+                  THEN i.model_name || ' modelinde ' || i.chassis_name || ' kasası yok'
+                ELSE 'Kasa: ' || i.chassis_name || ' sistemde yok'
+              END
+            ], NULL) AS missing
+          FROM input i
+          WHERE NOT EXISTS (SELECT 1 FROM resolved r WHERE r.ord = i.ord)
+        ),
         product_in AS (
           SELECT DISTINCT ON (mpn) mpn, brand_id, category_id, title, price, price_visible
           FROM resolved
+          WHERE NOT EXISTS (SELECT 1 FROM unmatched)
           ORDER BY mpn, ord
         ),
         product_ins AS (
@@ -169,7 +204,16 @@ const UploadModel = {
           ON CONFLICT DO NOTHING
           RETURNING id
         )
-        SELECT (SELECT count(*) FROM product_ins WHERE is_new)::int AS product_created
+        SELECT
+          (SELECT count(*) FROM product_ins WHERE is_new)::int AS product_created,
+          COALESCE(
+            (SELECT json_agg(
+                json_build_object('row', u.ord + 1, 'mpn', u.mpn, 'missing', u.missing)
+                ORDER BY u.ord
+              )
+             FROM unmatched u),
+            '[]'::json
+          ) AS unmatched
     `;
 
     const mpns = dto.map((item) => item.mpn);

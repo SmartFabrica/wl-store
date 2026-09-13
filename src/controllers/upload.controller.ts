@@ -94,6 +94,21 @@ export const importProduct = catchAsync(async (req: Request, res: Response) => {
   const clean = prepareRows(rows, normalizeProductRow);
   const created = await UploadModel.bulkUpsertProducts(dbPool, clean);
 
+  if (created.unmatched.length > 0) {
+    const detail = created.unmatched
+      .slice(0, MAX_REPORTED_ERRORS)
+      .map((item) => `Satır ${item.row} (${item.mpn}): ${item.missing.join(", ")}`)
+      .join(" | ");
+
+    const remaining = created.unmatched.length - MAX_REPORTED_ERRORS;
+    const suffix = remaining > 0 ? ` | ve ${remaining} satır daha` : "";
+
+    throw new AppError(
+      `${created.unmatched.length} satırda sistemde bulunmayan bilgi olduğu için yükleme yapılmadı. Lütfen önce bu kayıtları oluşturun. ${detail}${suffix}`,
+      HTTPStatus.UNPROCESSABLE_ENTITY,
+    );
+  }
+
   const response: APIResponse = {
     success: true,
     message: "Ürün başarıyla yüklendi",

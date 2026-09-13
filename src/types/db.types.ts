@@ -195,6 +195,13 @@ export interface BulkUpsertProductsRow {
   price_visible: ProductRow["price_visible"];
 }
 
+export interface BulkUpsertProductsUnmatchedRow {
+  row: number;
+  mpn: ProductRow["mpn"];
+  missing: string[];
+}
+
 export interface BulkUpsertProductsResult {
   product_created: number;
+  unmatched: BulkUpsertProductsUnmatchedRow[];
 }
