@@ -1,4 +1,4 @@
-import { QuoteStatus, UserRole, UserStatus } from "./common.types";
+import { CustomerProductSort, QuoteStatus, UserRole, UserStatus } from "./common.types";
 
 export interface CategoryRow {
   id: string;
@@ -128,11 +128,27 @@ export interface CustomerProductListItem extends Pick<ProductRow, "id" | "title"
 }
 
 export interface CustomerProductFilters {
-  category_id?: ProductRow["category_id"];
-  model_id?: ProductCompatibilityRow["model_id"];
-  chassis_id?: ProductCompatibilityRow["chassis_id"];
+  q?: string;
+  category_names?: CategoryRow["name"][];
+  brand_names?: BrandRow["name"][];
+  model_names?: BrandModelRow["name"][];
+  chassis_names?: BrandModelChassisRow["name"][];
+  sort?: CustomerProductSort;
   limit?: number;
 }
+
+export interface CustomerProductListResult {
+  items: CustomerProductListItem[];
+  total: number;
+}
+
+export interface CustomerBrandListItem extends Pick<BrandRow, "id" | "name"> {
+  product_count: number;
+}
+
+export interface CustomerBrandModelListItem extends Pick<BrandModelRow, "id" | "brand_id" | "name"> {}
+
+export interface CustomerChassisListItem extends Pick<BrandModelChassisRow, "id" | "model_id" | "name"> {}
 
 export interface CorporateUser extends UserRow {
   profile: Omit<CorporateProfileRow, "id" | "user_id" | "created_at" | "updated_at">;

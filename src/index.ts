@@ -13,6 +13,9 @@ import quoteRouter from "./routes/quote.route";
 import dashboardRouter from "./routes/dashboard.route";
 import uploadRouter from "./routes/upload.route";
 import customerProductRouter from "./routes/customer-product.route";
+import customerBrandRouter from "./routes/customer-brand.route";
+import customerBrandModelRouter from "./routes/customer-brand-model.route";
+import customerBrandModelChassisRouter from "./routes/customer-brand-model-chassis.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -23,6 +26,11 @@ app.use(cors());
 app.use("/api/auth", authRouter);
 // app.use(protect);
 
+app.use("/api/customer/products", customerProductRouter);
+app.use("/api/customer/brands", customerBrandRouter);
+app.use("/api/customer/models", customerBrandModelRouter);
+app.use("/api/customer/chassis", customerBrandModelChassisRouter);
+
 app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/brands", brandRouter);
@@ -32,7 +40,6 @@ app.use("/api/products", productRouter);
 app.use("/api/quotes", quoteRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/upload", uploadRouter);
-app.use("/api/customer/products", customerProductRouter);
 app.use(errorHandler);
 
 app.listen(port, () => {

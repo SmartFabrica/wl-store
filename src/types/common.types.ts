@@ -40,6 +40,13 @@ export enum UserStatus {
   APPROVED = "approved",
 }
 
+export enum CustomerProductSort {
+  NEW = "new",
+  PRICE_ASC = "price_asc",
+  PRICE_DESC = "price_desc",
+  AZ = "az",
+}
+
 export enum QuoteStatus {
   PENDING = "pending",
   APPROVED = "approved",
