@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from "pg";
-import { CustomerProductFilters, CustomerProductListItem, CustomerProductListResult } from "../types/db.types";
+import { CustomerProductDetail, CustomerProductFilters, CustomerProductListItem, CustomerProductListResult } from "../types/db.types";
 import { CustomerProductSort } from "../types/common.types";
 import { nameMatchCondition } from "../utils/query";
 
@@ -92,6 +92,55 @@ const CustomerProductModel = {
     const items = result.rows.map(({ total: _total, ...item }) => item);
 
     return { items, total };
+  },
+
+  getDetailById: async (client: Pool | PoolClient, id: string): Promise<CustomerProductDetail | null> => {
+    const sql = `
+        SELECT
+          p.id,
+          p.title,
+          p.mpn,
+          p.description,
+          p.specs,
+          p.price_visible,
+          CASE WHEN p.price_visible THEN p.price ELSE NULL END AS price,
+          p.brand_id,
+          b.name AS brand_name,
+          p.category_id,
+          c.name AS category_name,
+          COALESCE(
+            (SELECT json_agg(
+                json_build_object('id', pi.id, 'image_url', pi.image_url, 'is_main', pi.is_main)
+                ORDER BY pi.is_main DESC, pi.created_at ASC
+              )
+             FROM product_images pi
+             WHERE pi.product_id = p.id),
+            '[]'::json
+          ) AS images,
+          COALESCE(
+            (SELECT json_agg(
+                json_build_object(
+                  'model_id', pc.model_id,
+                  'model_name', bm.name,
+                  'chassis_id', pc.chassis_id,
+                  'chassis_name', bc.name
+                ) ORDER BY bm.name, bc.name
+              )
+             FROM product_compatibility pc
+             JOIN brand_models bm ON bm.id = pc.model_id
+             JOIN brand_chassis bc ON bc.id = pc.chassis_id
+             WHERE pc.product_id = p.id),
+            '[]'::json
+          ) AS compat
+        FROM products p
+        JOIN brands b ON b.id = p.brand_id
+        JOIN categories c ON c.id = p.category_id
+        WHERE p.id = $1
+    `;
+
+    const result = await client.query(sql, [id]);
+    if (result.rowCount === 0) return null;
+    return result.rows[0];
   },
 };
 

@@ -142,6 +142,26 @@ export interface CustomerProductListResult {
   total: number;
 }
 
+export interface CustomerProductImage extends Pick<ProductImageRow, "id" | "image_url" | "is_main"> {}
+
+export interface CustomerProductCompat {
+  model_id: BrandModelRow["id"];
+  model_name: BrandModelRow["name"];
+  chassis_id: BrandModelChassisRow["id"];
+  chassis_name: BrandModelChassisRow["name"];
+}
+
+export interface CustomerProductDetail extends Pick<ProductRow, "id" | "title" | "mpn" | "description" | "specs" | "price" | "price_visible"> {
+  brand_id: BrandRow["id"];
+  brand_name: BrandRow["name"];
+  category_id: CategoryRow["id"];
+  category_name: CategoryRow["name"];
+  images: CustomerProductImage[];
+  compat: CustomerProductCompat[];
+}
+
+export interface CustomerCategoryListItem extends Pick<CategoryRow, "id" | "name"> {}
+
 export interface CustomerBrandListItem extends Pick<BrandRow, "id" | "name"> {
   product_count: number;
 }

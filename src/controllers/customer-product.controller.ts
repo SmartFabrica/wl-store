@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../utils/catch-async";
 import dbPool from "../config/db";
 import { APIResponse, CustomerProductSort, HTTPStatus } from "../types/common.types";
-import { CustomerProductListResult } from "../types/db.types";
+import { CustomerProductDetail, CustomerProductListResult } from "../types/db.types";
 import CustomerProductModel from "../models/customer-product.model";
 import { AppError } from "../utils/app-error";
 import { parseCsvList, parseText } from "../utils/query";
@@ -40,6 +40,23 @@ export const getCustomerProducts = catchAsync(async (req: Request, res: Response
     success: true,
     message: "Ürünler başarıyla listelendi",
     data: products,
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
+export const getCustomerProductDetail = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const product = await CustomerProductModel.getDetailById(dbPool, id as string);
+  if (!product) {
+    throw new AppError("Aranan ürün bulunamadı", HTTPStatus.NOT_FOUND);
+  }
+
+  const response: APIResponse<CustomerProductDetail> = {
+    success: true,
+    message: "Ürün detayı başarıyla getirildi",
+    data: product,
   };
 
   return res.status(HTTPStatus.OK).json(response);

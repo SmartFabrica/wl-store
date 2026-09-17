@@ -16,6 +16,7 @@ import customerProductRouter from "./routes/customer-product.route";
 import customerBrandRouter from "./routes/customer-brand.route";
 import customerBrandModelRouter from "./routes/customer-brand-model.route";
 import customerBrandModelChassisRouter from "./routes/customer-brand-model-chassis.route";
+import customerCategoryRouter from "./routes/customer-category.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -27,6 +28,7 @@ app.use("/api/auth", authRouter);
 // app.use(protect);
 
 app.use("/api/customer/products", customerProductRouter);
+app.use("/api/customer/categories", customerCategoryRouter);
 app.use("/api/customer/brands", customerBrandRouter);
 app.use("/api/customer/models", customerBrandModelRouter);
 app.use("/api/customer/chassis", customerBrandModelChassisRouter);
