@@ -115,13 +115,13 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     throw new AppError("Giriş bilgileri hatalı veya geçersiz.", HTTPStatus.UNAUTHORIZED);
   }
 
-  if (user.status === UserStatus.PENDING) {
-    throw new AppError("Hesabınız henüz admin tarafından onaylanmamıştır. Lütfen bekleyiniz.", 403);
-  }
-
   const isPasswordMatch = await comparePassword(password, user.password_hash);
   if (!isPasswordMatch) {
     throw new AppError("Giriş bilgileri hatalı veya geçersiz.", HTTPStatus.UNAUTHORIZED);
+  }
+
+  if (user.status === UserStatus.PENDING) {
+    throw new AppError("Hesabınız henüz admin tarafından onaylanmamıştır. Lütfen bekleyiniz.", 403);
   }
 
   const token = generateToken({
