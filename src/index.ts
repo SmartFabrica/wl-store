@@ -17,6 +17,7 @@ import customerBrandRouter from "./routes/customer-brand.route";
 import customerBrandModelRouter from "./routes/customer-brand-model.route";
 import customerBrandModelChassisRouter from "./routes/customer-brand-model-chassis.route";
 import customerCategoryRouter from "./routes/customer-category.route";
+import customerCartRouter from "./routes/customer-cart.route";
 
 const app = express();
 const port = process.env.PORT ?? "3000";
@@ -25,13 +26,14 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 
 app.use("/api/auth", authRouter);
-// app.use(protect);
+app.use(protect);
 
 app.use("/api/customer/products", customerProductRouter);
 app.use("/api/customer/categories", customerCategoryRouter);
 app.use("/api/customer/brands", customerBrandRouter);
 app.use("/api/customer/models", customerBrandModelRouter);
 app.use("/api/customer/chassis", customerBrandModelChassisRouter);
+app.use("/api/customer/cart", customerCartRouter);
 
 app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);

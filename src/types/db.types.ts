@@ -201,6 +201,37 @@ export interface QuoteItemRow {
   created_at: Date;
 }
 
+export interface CartRow {
+  id: string;
+  buyer_id: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CartItemRow {
+  id: string;
+  cart_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CustomerCartItemDetail extends CartItemRow, Pick<ProductRow, "title" | "mpn" | "price" | "price_visible"> {
+  brand_name: BrandRow["name"];
+}
+
+export interface CustomerCartListItem extends Pick<CartItemRow, "id" | "product_id" | "quantity">, Pick<ProductRow, "title" | "mpn" | "price" | "price_visible"> {
+  brand_name: BrandRow["name"];
+  images: CustomerProductImage[];
+}
+
+export interface CustomerCartResult {
+  items: CustomerCartListItem[];
+  total_items: number;
+  total_quantity: number;
+}
+
 export interface OverviewRow {
   product_count: number;
   approved_customer_count: number;
