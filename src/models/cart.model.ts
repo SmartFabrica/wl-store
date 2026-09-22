@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from "pg";
-import { CartRow, CustomerCartItemDetail, CustomerCartListItem } from "../types/db.types";
+import { CartItemRow, CartRow, CustomerCartItemDetail, CustomerCartListItem } from "../types/db.types";
 
 interface CartItemDTO {
   id: string;
@@ -53,6 +53,32 @@ const CartModel = {
     const values = [dto.id, dto.cart_id, dto.product_id, dto.quantity];
     const result = await client.query(sql, values);
     return result.rows[0];
+  },
+
+  findItemById: async (client: Pool | PoolClient, buyerId: string, itemId: string): Promise<CartItemRow | null> => {
+    const sql = `
+        SELECT ci.*
+        FROM cart_items ci
+        JOIN carts c ON c.id = ci.cart_id
+        WHERE c.buyer_id = $1 AND ci.id = $2
+        LIMIT 1
+    `;
+    const values = [buyerId, itemId];
+    const result = await client.query(sql, values);
+    if (result.rowCount === 0) return null;
+    return result.rows[0];
+  },
+
+  deleteItem: async (client: Pool | PoolClient, buyerId: string, itemId: string): Promise<void> => {
+    const sql = `
+        DELETE FROM cart_items ci
+        USING carts c
+        WHERE c.id = ci.cart_id
+          AND c.buyer_id = $1
+          AND ci.id = $2
+    `;
+    const values = [buyerId, itemId];
+    await client.query(sql, values);
   },
 
   getItemsByBuyerId: async (client: Pool | PoolClient, buyerId: string): Promise<CustomerCartListItem[]> => {

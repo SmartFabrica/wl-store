@@ -62,6 +62,29 @@ export const addCustomerCartItem = catchAsync(async (req: Request, res: Response
   }
 });
 
+export const deleteCustomerCartItem = catchAsync(async (req: Request, res: Response) => {
+  const buyerId = req.user?.id;
+  if (!buyerId) {
+    throw new AppError("Bu işlem için oturum açmanız gerekmektedir", HTTPStatus.UNAUTHORIZED);
+  }
+
+  const { id } = req.params;
+
+  const existingItem = await CartModel.findItemById(dbPool, buyerId, id as string);
+  if (!existingItem) {
+    throw new AppError("Sepetten kaldırılacak ürün bulunamadı", HTTPStatus.NOT_FOUND);
+  }
+
+  await CartModel.deleteItem(dbPool, buyerId, id as string);
+
+  const response: APIResponse = {
+    success: true,
+    message: "Ürün sepetten kaldırıldı",
+  };
+
+  return res.status(HTTPStatus.OK).json(response);
+});
+
 export const getCustomerCart = catchAsync(async (req: Request, res: Response) => {
   const buyerId = req.user?.id;
   if (!buyerId) {

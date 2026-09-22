@@ -221,7 +221,8 @@ export interface CustomerCartItemDetail extends CartItemRow, Pick<ProductRow, "t
   brand_name: BrandRow["name"];
 }
 
-export interface CustomerCartListItem extends Pick<CartItemRow, "id" | "product_id" | "quantity">, Pick<ProductRow, "title" | "mpn" | "price" | "price_visible"> {
+export interface CustomerCartListItem
+  extends Pick<CartItemRow, "id" | "product_id" | "quantity">, Pick<ProductRow, "title" | "mpn" | "price" | "price_visible"> {
   brand_name: BrandRow["name"];
   images: CustomerProductImage[];
 }
