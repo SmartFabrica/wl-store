@@ -1,6 +1,6 @@
 import { Pool, PoolClient } from "pg";
-import { CorporateProfileRow, IndividualProfileRow, UserAggregate, UserRow } from "../types/db.types";
-import { UserStatus } from "../types/common.types";
+import { CorporateProfileRow, IndividualProfileRow, PublicUserAggregate, PublicUserRow, UserAggregate, UserRow } from "../types/db.types";
+import { UserRole, UserStatus } from "../types/common.types";
 
 type CreateUserDTO = Omit<UserRow, "created_at" | "updated_at">;
 type CreateCorporateProfileDto = Omit<CorporateProfileRow, "created_at" | "updated_at">;
@@ -86,6 +86,19 @@ const UserModel = {
     return result.rows[0];
   },
 
+  findByEmailAndRole: async (client: PoolClient | Pool, email: string, role: UserRole): Promise<UserRow | null> => {
+    const sql = `
+      SELECT id, email, password_hash, role, status, created_at, updated_at
+      FROM users
+      WHERE lower(email) = lower($1) AND role = $2
+      LIMIT 1
+    `;
+    const values = [email, role];
+    const result = await client.query(sql, values);
+    if (result.rowCount === 0) return null;
+    return result.rows[0];
+  },
+
   findById: async (client: PoolClient | Pool, id: string): Promise<UserRow | null> => {
     const sql = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
     const values = [id];
@@ -94,13 +107,12 @@ const UserModel = {
     return result.rows[0];
   },
 
-  getDetailById: async (client: PoolClient | Pool, id: string): Promise<UserAggregate | null> => {
+  getDetailById: async (client: PoolClient | Pool, id: string): Promise<PublicUserAggregate | null> => {
     const sql = `
-      SELECT 
-        u.id, 
-        u.email, 
-        u.password_hash, 
-        u.role, 
+      SELECT
+        u.id,
+        u.email,
+        u.role,
         u.status, 
         u.created_at,
         u.updated_at,
@@ -133,7 +145,7 @@ const UserModel = {
     return result.rows[0];
   },
 
-  getAllUsers: async (client: PoolClient | Pool, limit: number): Promise<UserAggregate[]> => {
+  getAllUsers: async (client: PoolClient | Pool, limit: number): Promise<PublicUserAggregate[]> => {
     let sql = `
       SELECT 
         u.id, u.email, u.role, u.status, u.created_at, u.updated_at,
@@ -169,13 +181,13 @@ const UserModel = {
     return result.rows;
   },
 
-  updateUserStatus: async (client: Pool | PoolClient, dto: UpdateUserStatusDTO): Promise<UserRow> => {
+  updateUserStatus: async (client: Pool | PoolClient, dto: UpdateUserStatusDTO): Promise<PublicUserRow> => {
     const sql = `
-      UPDATE users 
-      SET 
-        status = $2 
+      UPDATE users
+      SET
+        status = $2
       WHERE id = $1
-      RETURNING *
+      RETURNING id, email, role, status, created_at, updated_at
     `;
 
     const values = [dto.id, dto.status];

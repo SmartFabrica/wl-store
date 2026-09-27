@@ -6,7 +6,7 @@ import dbPool from "../config/db";
 import UserModel from "../models/user.model";
 import { v4 as uuidv4 } from "uuid";
 import { comparePassword, hashPassword } from "../utils/password";
-import { UserAggregate } from "../types/db.types";
+import { PublicUserAggregate } from "../types/db.types";
 import { generateToken } from "../utils/jwt";
 
 export const register = catchAsync(async (req: Request, res: Response) => {
@@ -36,7 +36,9 @@ export const register = catchAsync(async (req: Request, res: Response) => {
       status: UserStatus.PENDING,
     });
 
-    let clientResponseData: UserAggregate;
+    const { password_hash: _passwordHash, ...publicUser } = savedUser;
+
+    let clientResponseData: PublicUserAggregate;
 
     if (role === UserRole.CORPORATE) {
       if (!company_name || !phone) {
@@ -54,7 +56,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
       });
 
       clientResponseData = {
-        ...savedUser,
+        ...publicUser,
         profile: {
           company_name: savedCorporateProfile.company_name,
           tax_number: savedCorporateProfile.tax_number,
@@ -77,7 +79,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
       });
 
       clientResponseData = {
-        ...savedUser,
+        ...publicUser,
         profile: {
           first_name: savedIndividualProfile.first_name,
           last_name: savedIndividualProfile.last_name,
@@ -87,7 +89,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     }
 
     await client.query("COMMIT");
-    const response: APIResponse<UserAggregate> = {
+    const response: APIResponse<PublicUserAggregate> = {
       success: true,
       message: "Kullanıcı kayıt başvurusu başarıyla alındı. Onay bekleniyor",
       data: clientResponseData,
@@ -129,12 +131,14 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     userId: user.id,
   });
 
-  const response: APIResponse<{ token: string; user: UserAggregate }> = {
+  const { password_hash, ...publicUser } = user;
+
+  const response: APIResponse<{ token: string; user: PublicUserAggregate }> = {
     success: true,
     message: "Giriş işlemi başarıyla gerçekleştirildi.",
     data: {
       token,
-      user,
+      user: publicUser,
     },
   };
 

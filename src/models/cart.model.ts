@@ -81,6 +81,17 @@ const CartModel = {
     await client.query(sql, values);
   },
 
+  deleteItemsByBuyerId: async (client: Pool | PoolClient, buyerId: string): Promise<void> => {
+    const sql = `
+        DELETE FROM cart_items ci
+        USING carts c
+        WHERE c.id = ci.cart_id
+          AND c.buyer_id = $1
+    `;
+    const values = [buyerId];
+    await client.query(sql, values);
+  },
+
   getItemsByBuyerId: async (client: Pool | PoolClient, buyerId: string): Promise<CustomerCartListItem[]> => {
     const sql = `
         SELECT

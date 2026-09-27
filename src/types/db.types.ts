@@ -180,6 +180,10 @@ export interface IndividualUser extends UserRow {
 
 export type UserAggregate = CorporateUser | IndividualUser;
 
+export type PublicUserRow = Omit<UserRow, "password_hash">;
+
+export type PublicUserAggregate = Omit<CorporateUser, "password_hash"> | Omit<IndividualUser, "password_hash">;
+
 export interface QuoteRow {
   id: string;
   quote_number: string;

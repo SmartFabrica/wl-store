@@ -26,9 +26,84 @@ export interface QuoteListDTO {
   buyer_name: CorporateProfileRow["company_name"] | IndividualProfileRow["first_name"];
 }
 
+interface CreateQuoteDTO {
+  id: string;
+  buyer_id: string;
+  shipping_address: QuoteRow["shipping_address"];
+  billing_address?: QuoteRow["billing_address"];
+  buyer_note?: QuoteRow["buyer_note"];
+}
+
+export interface CustomerQuoteListItem extends Pick<QuoteRow, "id" | "quote_number" | "status" | "created_at"> {
+  item_count: number;
+  total_price: string | null;
+  has_hidden_price: boolean;
+}
+
+export interface CustomerQuoteCreateResult {
+  quote: QuoteRow;
+  items: QuoteItemRow[];
+}
+
 const QuoteModel = {
-  getBuyerQuotes: async (client: Pool | PoolClient, buyerId: string): Promise<QuoteRow[]> => {
-    const sql = "SELECT * FROM quotes WHERE buyer_id = $1 ORDER BY created_at DESC";
+  create: async (client: PoolClient, dto: CreateQuoteDTO): Promise<QuoteRow> => {
+    await client.query("SELECT pg_advisory_xact_lock(hashtext('quotes_quote_number'))");
+
+    const sql = `
+      INSERT INTO quotes (id, quote_number, buyer_id, shipping_address, billing_address, buyer_note)
+      SELECT
+        $1,
+        'QT-' || to_char(CURRENT_DATE, 'YYYY') || '-' ||
+          LPAD((COALESCE(MAX(SUBSTRING(q.quote_number FROM 9)::int), 0) + 1)::text, 4, '0'),
+        $2, $3, $4, $5
+      FROM quotes q
+      WHERE q.quote_number LIKE 'QT-' || to_char(CURRENT_DATE, 'YYYY') || '-%'
+      RETURNING *
+    `;
+
+    const values = [dto.id, dto.buyer_id, dto.shipping_address, dto.billing_address ?? null, dto.buyer_note ?? null];
+    const result = await client.query(sql, values);
+    return result.rows[0];
+  },
+
+  createItemsFromCart: async (client: PoolClient, quoteId: string, buyerId: string): Promise<QuoteItemRow[]> => {
+    const sql = `
+      INSERT INTO quote_items (id, quote_id, product_id, quantity)
+      SELECT gen_random_uuid()::text, $1, ci.product_id, ci.quantity
+      FROM cart_items ci
+      JOIN carts c ON c.id = ci.cart_id
+      WHERE c.buyer_id = $2
+      RETURNING *
+    `;
+
+    const values = [quoteId, buyerId];
+    const result = await client.query(sql, values);
+    return result.rows;
+  },
+
+  getBuyerQuotes: async (client: Pool | PoolClient, buyerId: string): Promise<CustomerQuoteListItem[]> => {
+    const sql = `
+      SELECT
+        q.id,
+        q.quote_number,
+        q.status,
+        q.created_at,
+        COALESCE(i.item_count, 0) AS item_count,
+        i.total_price,
+        COALESCE(i.has_hidden_price, false) AS has_hidden_price
+      FROM quotes q
+      LEFT JOIN LATERAL (
+        SELECT
+          COUNT(*)::int AS item_count,
+          SUM(CASE WHEN p.price_visible THEN p.price * qi.quantity END) AS total_price,
+          BOOL_OR(NOT COALESCE(p.price_visible, false)) AS has_hidden_price
+        FROM quote_items qi
+        JOIN products p ON p.id = qi.product_id
+        WHERE qi.quote_id = q.id
+      ) i ON TRUE
+      WHERE q.buyer_id = $1
+      ORDER BY q.created_at DESC
+    `;
     const values = [buyerId];
     const result = await client.query(sql, values);
     return result.rows;

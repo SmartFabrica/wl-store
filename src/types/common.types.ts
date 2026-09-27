@@ -52,5 +52,4 @@ export enum QuoteStatus {
   APPROVED = "approved",
   SHIPPED = "shipped",
   COMPLETED = "completed",
-  CANCELLED = "cancelled",
 }

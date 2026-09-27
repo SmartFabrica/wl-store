@@ -3,14 +3,14 @@ import { catchAsync } from "../utils/catch-async";
 import UserModel from "../models/user.model";
 import dbPool from "../config/db";
 import { APIResponse, HTTPStatus, UserStatus } from "../types/common.types";
-import { UserAggregate, UserRow } from "../types/db.types";
+import { PublicUserAggregate, PublicUserRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 
 export const getUsers = catchAsync(async (req: Request, res: Response) => {
   const { limit } = req.query;
 
   const userRows = await UserModel.getAllUsers(dbPool, Number(limit));
-  const response: APIResponse<UserAggregate[]> = {
+  const response: APIResponse<PublicUserAggregate[]> = {
     success: true,
     message: "Tüm kullanıcılar başarıyla listelendi",
     data: userRows,
@@ -27,7 +27,7 @@ export const getUserById = catchAsync(async (req: Request, res: Response) => {
     throw new AppError("Aranan kullanıcı bulunamadı", HTTPStatus.BAD_REQUEST);
   }
 
-  const response: APIResponse<UserAggregate> = {
+  const response: APIResponse<PublicUserAggregate> = {
     success: true,
     message: "Kullanıcı detayı başarıyla getirildi.",
     data: user,
@@ -54,7 +54,7 @@ export const reviewUserStatus = catchAsync(async (req: Request, res: Response) =
     status,
   });
 
-  const response: APIResponse<UserRow> = {
+  const response: APIResponse<PublicUserRow> = {
     success: true,
     message: "Kullanıcı başvuru durumu güncellendi",
     data: updatedUser,

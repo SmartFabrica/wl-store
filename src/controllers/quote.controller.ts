@@ -6,19 +6,6 @@ import { QuoteRow } from "../types/db.types";
 import { AppError } from "../utils/app-error";
 import { catchAsync } from "../utils/catch-async";
 
-export const getBuyerQuotes = catchAsync(async (req: Request, res: Response) => {
-  const buyerId = req.user?.id;
-  const quotes = await QuoteModel.getBuyerQuotes(dbPool, buyerId as string);
-
-  const response: APIResponse<QuoteRow[]> = {
-    success: true,
-    message: "Alıcı için teklifler getirilmiştir",
-    data: quotes,
-  };
-
-  return res.status(HTTPStatus.OK).json(response);
-});
-
 export const getVendorQuotes = catchAsync(async (req: Request, res: Response) => {
   //const vendorId = req.user?.id;
   const { limit } = req.query;
